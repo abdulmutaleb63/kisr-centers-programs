@@ -25,3 +25,16 @@ body { background:#f8f9fa; }
 [dir="rtl"] .program-list li { justify-content:space-between; }
 [dir="rtl"] .center-header { flex-direction:row-reverse; }
 [dir="rtl"] .center-title { text-align:right; }
+
+/* Landing tiles */
+.tile .tile-img{
+  aspect-ratio: 4/3;
+  background-size: cover;
+  background-position: center;
+  transition: transform .3s ease;
+}
+.tile:hover .tile-img{ transform: scale(1.05); }
+.tile .card-body{ border-top: 1px solid #e9ecef; }
+
+/* Minor polish */
+.card { border-radius: 14px; }
