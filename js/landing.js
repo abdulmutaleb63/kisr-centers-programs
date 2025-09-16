@@ -7,10 +7,10 @@ async function loadData() {
 function tileImageFor(code) {
   // Optional: map a few codes to background images (you can replace URLs later)
   const map = {
-    ENG: 'https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=1200&auto=format&fit=crop',
+    ENG: 'img/energy.jpg',
     ENV: 'img/envkisr.jpg',
-    WAT: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1200&auto=format&fit=crop',
-    PET: 'https://images.unsplash.com/photo-1542411334-0292d561e109?q=80&w=1200&auto=format&fit=crop',
+    WAT: 'img/water.jpg',
+    PET: 'img/petr.jpg',
     TE:  'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1200&auto=format&fit=crop',
     QHSW:'https://images.unsplash.com/photo-1581594693700-5d5b2f38f9f1?q=80&w=1200&auto=format&fit=crop',
     SSDD:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop'
