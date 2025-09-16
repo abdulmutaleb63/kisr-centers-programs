@@ -16,7 +16,7 @@ function renderCenter(data, centerId) {
     return;
   }
 
-  document.getElementById('metaStamp').textContent =
+  
   document.getElementById('centerTitle').textContent = center.name_en;
   document.getElementById('centerSubtitle').textContent = center.name_ar || '';
 
