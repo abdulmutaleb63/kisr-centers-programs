@@ -17,7 +17,6 @@ function renderCenter(data, centerId) {
   }
 
   document.getElementById('metaStamp').textContent =
-    `Version ${data.meta?.version ?? '1'} • Last updated: ${data.meta?.last_updated ?? 'N/A'}`;
   document.getElementById('centerTitle').textContent = center.name_en;
   document.getElementById('centerSubtitle').textContent = center.name_ar || '';
 
