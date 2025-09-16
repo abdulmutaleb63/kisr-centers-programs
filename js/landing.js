@@ -12,7 +12,7 @@ function tileImageFor(code) {
     WAT: 'img/water.jpg',
     PET: 'img/petr.jpg',
     TE:  'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1200&auto=format&fit=crop',
-    QHSW:'img/water.jpg',
+    QHSW:'img/QHSE.png',
     SSDD:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop'
   };
   return map[code] || 'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1200&auto=format&fit=crop';
