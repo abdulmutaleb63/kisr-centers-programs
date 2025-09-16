@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "version": 1,
+    "last_updated": "2025-09-16",
+    "notes": "Initial seed. No commercialization division or liaison details."
+  },
+  "centers": [
+    {
+      "center_id": "CEN-ENG",
+      "code": "ENG",
+      "name_en": "Energy & Building Research Center",
+      "name_ar": "مركز أبحاث الطاقة والبناء",
+      "status": "active"
+    },
+    {
+      "center_id": "CEN-ENV",
+      "code": "ENV",
+      "name_en": "Environment & Life Sciences Research Center",
+      "name_ar": "مركز أبحاث البيئة وعلوم الحياة",
+      "status": "active"
+    },
+    {
+      "center_id": "CEN-WAT",
+      "code": "WAT",
+      "name_en": "Water Research Center",
+      "name_ar": "مركز أبحاث المياه",
+      "status": "active"
+    },
+    {
+      "center_id": "CEN-PET",
+      "code": "PET",
+      "name_en": "Petroleum Research Center",
+      "name_ar": "مركز أبحاث البترول",
+      "status": "active"
+    },
+    {
+      "center_id": "DIV-TE",
+      "code": "TE",
+      "name_en": "Techno Economic Division",
+      "name_ar": "قطاع التقنية الاقتصادية",
+      "status": "active"
+    },
+    {
+      "center_id": "DEPT-QHSW",
+      "code": "QHSW",
+      "name_en": "Quality, Health, Safety & Work Environment Department",
+      "name_ar": "إدارة الجودة والصحة والسلامة وبيئة العمل",
+      "status": "active"
+    },
+    {
+      "center_id": "DEPT-SSDD",
+      "code": "SSDD",
+      "name_en": "Systems and Software Development Department",
+      "name_ar": "إدارة النظم وتطوير البرمجيات",
+      "status": "active"
+    }
+  ],
+  "programs": [
+    { "program_id": "PRG-ENG-REEE", "center_id": "CEN-ENG", "code": "ENG-REEE", "name_en": "Renewable Energy & Energy Efficiency Program", "name_ar": "برنامج الطاقة المتجددة وكفاءة الطاقة", "status": "active" },
+    { "program_id": "PRG-ENG-BI",   "center_id": "CEN-ENG", "code": "ENG-BI",   "name_en": "Building & Infrastructure Program",          "name_ar": "برنامج المباني والبنية التحتية",       "status": "active" },
+    { "program_id": "PRG-ENG-NA",   "center_id": "CEN-ENG", "code": "ENG-NA",   "name_en": "Nanotechnology Applications Program",        "name_ar": "برنامج تطبيقات النانو تكنولوجي",       "status": "active" },
+
+    { "program_id": "PRG-ENV-ECC",  "center_id": "CEN-ENV", "code": "ENV-ECC",  "name_en": "Environment and Climate Change Program",     "name_ar": "برنامج البيئة وتغير المناخ",           "status": "active" },
+    { "program_id": "PRG-ENV-FS",   "center_id": "CEN-ENV", "code": "ENV-FS",   "name_en": "Food Security Program",                      "name_ar": "برنامج الأمن الغذائي",                 "status": "active" },
+    { "program_id": "PRG-ENV-CMR",  "center_id": "CEN-ENV", "code": "ENV-CMR",  "name_en": "Coastal & Marine Resources Program",         "name_ar": "برنامج الموارد الساحلية والبحرية",     "status": "active" },
+
+    { "program_id": "PRG-WAT-HWRM","center_id": "CEN-WAT", "code": "WAT-HWRM","name_en": "Hydrology & Water Resources Management Program","name_ar": "برنامج الهيدرولوجيا وإدارة الموارد المائية","status": "active" },
+    { "program_id": "PRG-WAT-WDT", "center_id": "CEN-WAT", "code": "WAT-WDT", "name_en": "Water Desalination Technologies Program",     "name_ar": "برنامج تقنيات تحلية المياه",           "status": "active" },
+    { "program_id": "PRG-WAT-WTRT","center_id": "CEN-WAT", "code": "WAT-WTRT","name_en": "Water Treatment & Reuse Technologies Program","name_ar": "برنامج تقنيات معالجة المياه وإعادة استخدامها","status": "active" },
+
+    { "program_id": "PRG-PET-IOR", "center_id": "CEN-PET", "code": "PET-IOR", "name_en": "Improved Oil Recovery Program",               "name_ar": "برنامج تحسين الاستخلاص النفطي",        "status": "active" },
+    { "program_id": "PRG-PET-PRP", "center_id": "CEN-PET", "code": "PET-PRP", "name_en": "Petroleum Refining Processes Program",        "name_ar": "برنامج عمليات تكرير البترول",          "status": "active" },
+    { "program_id": "PRG-PET-PMT", "center_id": "CEN-PET", "code": "PET-PMT", "name_en": "Petrochemicals & Materials Technology Program","name_ar": "برنامج البتروكيماويات وتقنية المواد",   "status": "active" },
+
+    { "program_id": "PRG-TE-MPA",  "center_id": "DIV-TE",  "code": "TE-MPA",  "name_en": "Macroeconomic Policy Analysis Program",       "name_ar": "برنامج تحليل سياسات الاقتصاد الكلي",   "status": "active" },
+    { "program_id": "PRG-TE-FIPSD","center_id": "DIV-TE",  "code": "TE-FIPSD","name_en": "Feasibility, Innovation & Private Sector Development Program","name_ar": "برنامج الجدوى والابتكار وتطوير القطاع الخاص","status": "active" }
+  ]
+}
