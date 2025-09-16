@@ -19,8 +19,6 @@ function tileImageFor(code) {
 }
 
 function renderTiles(data) {
-  document.getElementById('metaStamp').textContent =
-    `Version ${data.meta?.version ?? '1'} • Last updated: ${data.meta?.last_updated ?? 'N/A'}`;
 
   const tiles = document.getElementById('tiles');
   tiles.innerHTML = '';
