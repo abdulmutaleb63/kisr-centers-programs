@@ -39,20 +39,4 @@ body { background:#f8f9fa; }
 /* Minor polish */
 .card { border-radius: 14px; }
 
-/* Make footer image fill the width and sit at the bottom */
-html, body { height: 100%; }
-body { display: flex; flex-direction: column; }
-main { flex: 1 0 auto; }          /* pushes footer down */
-footer.image-footer { 
-  flex-shrink: 0; 
-  padding: 0; 
-  border: 0; 
-  background: 'img/kisrfooter.png' center/cover no-repeat;
-  min-height: 140px;                /* adjust to your image’s height */
-}
-
-/* Hide in print if you like */
-@media print {
-  footer.image-footer { display: none !important; }
-}
 
