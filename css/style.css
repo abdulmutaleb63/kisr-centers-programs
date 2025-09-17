@@ -48,7 +48,7 @@ footer.image-footer {
   padding: 0; 
   border: 0; 
   background: url('img/kisrfooter.png') center/cover no-repeat;
-  min-height: 140px;               /* adjust to your image’s height */
+  min-height: 140px;                /* adjust to your image’s height */
 }
 
 /* Hide in print if you like */
