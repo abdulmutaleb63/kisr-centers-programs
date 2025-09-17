@@ -1,7 +1,5 @@
 <!doctype html>
 <html lang="en" dir="ltr">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/db.js"></script>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,16 +8,39 @@
   <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Top bar with KISR logo -->
+  <!-- Top bar with KISR logo + Auth buttons -->
   <nav class="navbar bg-white border-bottom sticky-top">
     <div class="container d-flex align-items-center justify-content-between">
       <a class="navbar-brand d-flex align-items-center gap-2" href="#">
         <img src="img/kisrlogo.png" alt="KISR" width="120">
         <span class="fw-bold">Centers & Programs</span>
       </a>
-      
+      <div class="d-flex gap-2">
+        <button id="loginBtn" class="btn btn-outline-primary btn-sm">Login</button>
+        <button id="logoutBtn" class="btn btn-outline-secondary btn-sm d-none">Logout</button>
+      </div>
     </div>
   </nav>
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" id="loginForm">
+        <div class="modal-header">
+          <h5 class="modal-title">SRID Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body vstack gap-3">
+          <input type="email" class="form-control" id="loginEmail" placeholder="email@kisr.edu.kw" required>
+          <input type="password" class="form-control" id="loginPassword" placeholder="Password" required>
+          <div class="text-danger small d-none" id="loginError"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <header class="py-5 bg-light border-bottom">
     <div class="container text-center">
@@ -30,15 +51,56 @@
 
   <main class="container py-4">
     <!-- Tiles grid -->
-    <div id="tiles" class="row g-4">
-      <!-- JS injects one tile per center -->
-    </div>
+    <div id="tiles" class="row g-4"><!-- JS injects tiles --></div>
   </main>
 
- <footer class="mt-5">
-  <img src="img/kisrfooter.png" alt="" class="footer-img">
-</footer>
-  
+  <footer class="mt-5">
+    <img src="img/kisrfooter.png" alt="" class="footer-img">
+  </footer>
+
+  <!-- JS: Bootstrap (for modal), Supabase, DB helper, page script, Auth controller -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/db.js"></script>
   <script src="js/landing.js"></script>
+  <script>
+    // Auth controller for the landing page
+    let loginModal;
+    document.addEventListener('DOMContentLoaded', async () => {
+      loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+      const loginBtn = document.getElementById('loginBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const loginForm = document.getElementById('loginForm');
+      const loginError = document.getElementById('loginError');
+
+      async function updateAuthUI() {
+        const session = await getSession();
+        const authed = !!session;
+        loginBtn.classList.toggle('d-none', authed);
+        logoutBtn.classList.toggle('d-none', !authed);
+        document.body.dataset.authed = authed ? '1' : '0';
+      }
+
+      loginBtn?.addEventListener('click', () => loginModal.show());
+      logoutBtn?.addEventListener('click', async () => { await signOut(); updateAuthUI(); });
+
+      loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError?.classList.add('d-none');
+        try {
+          await signIn(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+          loginModal.hide();
+          updateAuthUI();
+          if (typeof refreshAfterLogin === 'function') refreshAfterLogin();
+        } catch (err) {
+          loginError.textContent = err.message;
+          loginError.classList.remove('d-none');
+        }
+      });
+
+      onAuthChange(() => updateAuthUI());
+      updateAuthUI();
+    });
+  </script>
 </body>
 </html>
