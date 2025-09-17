@@ -3,7 +3,11 @@ const SUPABASE_URL = "https://qwhxmjwrfgbavakwzikp.supabase.co";   // <-- paste 
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aHhtandyZmdiYXZha3d6aWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwODk2NTAsImV4cCI6MjA3MzY2NTY1MH0.hXu-sseyjo1_FYEaGIObCdWyb8_OkOmCauQM1LjyK74";              // <-- paste yours
 
 // init
-const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// js/db.js
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'kisr_srid_auth' }
+});
+
 
 // ===== Auth helpers =====
 async function signIn(email, password) {
