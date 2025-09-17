@@ -18,7 +18,7 @@ function renderTiles(centers) {
     const col = document.createElement('div');
     col.className = 'col-12 col-sm-6 col-lg-3';
     col.innerHTML = `
-      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden" href="center.html?id=${encodeURIComponent(c.center_id)}">
+      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden" href="center.html?v=6&id=${encodeURIComponent(c.center_id)}">
         <div class="tile-img" style="background-image:url('${tileImageFor(c.code)}')"></div>
         <div class="card-body">
           <div class="small text-uppercase text-primary fw-bold">${c.name_en}</div>
