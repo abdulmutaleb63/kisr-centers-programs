@@ -1,6 +1,12 @@
-function q(param) {
+function getCenterId() {
   const u = new URL(location.href);
-  return u.searchParams.get(param);
+  return (
+    u.searchParams.get('id')   ||
+    u.searchParams.get('ID')   ||
+    u.searchParams.get('Id')   ||
+    u.searchParams.get('hnID') ||
+    u.searchParams.get('lnID')
+  );
 }
 
 async function renderCenter(centerId) {
@@ -73,7 +79,7 @@ async function renderCenter(centerId) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const id = q('id');
+    const id = getCenterId();
     if (!id) {
       document.getElementById('programGrid').innerHTML =
         `<div class="alert alert-warning">Missing center id. Go back to the <a href="index.html">home page</a>.</div>`;
@@ -82,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await renderCenter(id);
 
-    // Provide a hook so the page can refresh after login or after adding a program
+    // Refresh after login or after adding a program
     window.refreshAfterLogin = () => renderCenter(id);
 
   } catch (e) {
