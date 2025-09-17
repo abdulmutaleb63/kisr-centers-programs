@@ -107,5 +107,15 @@
       updateAuthUI();
     });
   </script>
+  <script>
+  // When Chrome restores this page from back/forward cache,
+  // re-check the session and update the UI.
+  window.addEventListener('pageshow', () => {
+    if (typeof updateAuthUI === 'function') {
+      updateAuthUI();
+    }
+  });
+</script>
+
 </body>
 </html>
