@@ -73,13 +73,18 @@
       const loginForm = document.getElementById('loginForm');
       const loginError = document.getElementById('loginError');
 
-      async function updateAuthUI() {
-        const session = await getSession();
-        const authed = !!session;
-        loginBtn.classList.toggle('d-none', authed);
-        logoutBtn.classList.toggle('d-none', !authed);
-        document.body.dataset.authed = authed ? '1' : '0';
-      }
+       // existing controller defines updateAuthUI() implicitly — make it callable:
+  async function updateAuthUI() {
+    const session = await getSession();
+    const authed = !!session;
+    document.getElementById('loginBtn')?.classList.toggle('d-none', authed);
+    document.getElementById('logoutBtn')?.classList.toggle('d-none', !authed);
+    document.body.dataset.authed = authed ? '1' : '0';
+  }
+
+  // keep the rest of your controller code as-is, then add:
+  window.addEventListener('pageshow', () => { updateAuthUI(); });
+
 
       loginBtn?.addEventListener('click', () => loginModal.show());
       logoutBtn?.addEventListener('click', async () => { await signOut(); updateAuthUI(); });
