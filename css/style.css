@@ -45,6 +45,6 @@ body { background:#f8f9fa; }
   height: clamp(70px, 12vw, 160px); /* min 70px, preferred 12vw, max 160px */
   object-fit: cover;                /* crop nicely if the aspect doesn't match */
   display: block;
-}
+} 
 
 
