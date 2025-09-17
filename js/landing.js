@@ -1,7 +1,4 @@
-// No more fetching data/programs.json — we use Supabase via db.js
-
 function tileImageFor(code) {
-  // Your custom images (kept as-is)
   const map = {
     ENG: 'img/energy.jpg',
     ENV: 'img/envkisr.jpg',
@@ -17,33 +14,32 @@ function tileImageFor(code) {
 function renderTiles(centers) {
   const tiles = document.getElementById('tiles');
   tiles.innerHTML = '';
-
-  const sorted = centers.slice().sort((a, b) => a.name_en.localeCompare(b.name_en));
-
-  sorted.forEach(c => {
+  centers.slice().sort((a,b)=>a.name_en.localeCompare(b.name_en)).forEach(c => {
     const col = document.createElement('div');
     col.className = 'col-12 col-sm-6 col-lg-3';
     col.innerHTML = `
-      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden"
-         href="center.html?id=${encodeURIComponent(c.center_id)}">
+      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden" href="center.html?id=${encodeURIComponent(c.center_id)}">
         <div class="tile-img" style="background-image:url('${tileImageFor(c.code)}')"></div>
         <div class="card-body">
           <div class="small text-uppercase text-primary fw-bold">${c.name_en}</div>
           <div class="text-muted small">${c.name_ar || ''}</div>
         </div>
-      </a>
-    `;
+      </a>`;
     tiles.appendChild(col);
   });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const tiles = document.getElementById('tiles');
   try {
-    // getCenters() is provided by js/db.js (Supabase)
-    const centers = await getCenters();
+    const centers = await getCenters(); // from db.js
+    if (!centers?.length) {
+      tiles.innerHTML = `<div class="alert alert-warning">No centers returned from database.</div>`;
+      return;
+    }
     renderTiles(centers);
   } catch (e) {
-    document.getElementById('tiles').innerHTML =
-      `<div class="alert alert-danger">Error: ${e.message}</div>`;
+    console.error(e);
+    tiles.innerHTML = `<div class="alert alert-danger"><strong>Load error:</strong> ${e.message || e}</div>`;
   }
 });
