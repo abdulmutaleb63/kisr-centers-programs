@@ -38,7 +38,15 @@ body { background:#f8f9fa; }
 
 /* Minor polish */
 .card { border-radius: 14px; }
-
+/* Sticky footer layout */
+html, body { height: 100%; }
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main { flex: 1 0 auto; }   /* take remaining height */
+footer { margin-top: auto; }  /* push footer to bottom */
 /* Responsive footer image: width 100%, height scales with viewport width */
 .footer-img{
   width: 100%;
