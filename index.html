@@ -124,6 +124,10 @@
   });
 </script>
 
+<script>
+// Prevent Chrome from freezing this page in the back/forward cache.
+window.addEventListener('unload', () => {});
+</script>
 
 </body>
 </html>
