@@ -125,3 +125,13 @@ window.addEventListener('pageshow', () => {
   const id = (u.searchParams.get('id') || u.searchParams.get('ID') || u.searchParams.get('Id') || u.searchParams.get('hnID') || u.searchParams.get('lnID'));
   if (id) renderCenter(id);
 });
+// Re-run renderCenter if Chrome restores the page from bfcache
+window.addEventListener('pageshow', () => {
+  const u = new URL(location.href);
+  const id =
+    u.searchParams.get('id') ||
+    u.searchParams.get('ID') ||
+    u.searchParams.get('hnID') ||
+    u.searchParams.get('lnID');
+  if (id) renderCenter(id);
+});
