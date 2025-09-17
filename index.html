@@ -96,7 +96,9 @@
           await signIn(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
           loginModal.hide();
           updateAuthUI();
-          if (typeof refreshAfterLogin === 'function') refreshAfterLogin();
+          // Refresh the page after login to ensure a fresh session
+if (typeof refreshAfterLogin === 'function') refreshAfterLogin();
+else location.reload();
         } catch (err) {
           loginError.textContent = err.message;
           loginError.classList.remove('d-none');
