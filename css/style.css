@@ -39,4 +39,12 @@ body { background:#f8f9fa; }
 /* Minor polish */
 .card { border-radius: 14px; }
 
+/* Responsive footer image: width 100%, height scales with viewport width */
+.footer-img{
+  width: 100%;
+  height: clamp(70px, 12vw, 160px); /* min 70px, preferred 12vw, max 160px */
+  object-fit: cover;                /* crop nicely if the aspect doesn't match */
+  display: block;
+}
+
 
