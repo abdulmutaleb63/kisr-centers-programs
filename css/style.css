@@ -47,7 +47,7 @@ footer.image-footer {
   flex-shrink: 0; 
   padding: 0; 
   border: 0; 
-  background: url('img/footer-strip.png') center/cover no-repeat;
+  background: url('img/kisrfooter.png') center/cover no-repeat;
   min-height: 140px;               /* adjust to your image’s height */
 }
 
