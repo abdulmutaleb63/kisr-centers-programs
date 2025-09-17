@@ -1,11 +1,7 @@
-async function loadData() {
-  const res = await fetch('data/programs.json', { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to load data/programs.json');
-  return res.json();
-}
+// No more fetching data/programs.json — we use Supabase via db.js
 
 function tileImageFor(code) {
-  // Optional: map a few codes to background images (you can replace URLs later)
+  // Your custom images (kept as-is)
   const map = {
     ENG: 'img/energy.jpg',
     ENV: 'img/envkisr.jpg',
@@ -18,19 +14,18 @@ function tileImageFor(code) {
   return map[code] || 'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1200&auto=format&fit=crop';
 }
 
-function renderTiles(data) {
-
+function renderTiles(centers) {
   const tiles = document.getElementById('tiles');
   tiles.innerHTML = '';
 
-  // Only “centers/divisions/departments” we seeded; already skipping commercialization per your request
-  const sorted = data.centers.slice().sort((a,b)=>a.name_en.localeCompare(b.name_en));
+  const sorted = centers.slice().sort((a, b) => a.name_en.localeCompare(b.name_en));
 
   sorted.forEach(c => {
     const col = document.createElement('div');
     col.className = 'col-12 col-sm-6 col-lg-3';
     col.innerHTML = `
-      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden" href="center.html?id=${encodeURIComponent(c.center_id)}">
+      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden"
+         href="center.html?id=${encodeURIComponent(c.center_id)}">
         <div class="tile-img" style="background-image:url('${tileImageFor(c.code)}')"></div>
         <div class="card-body">
           <div class="small text-uppercase text-primary fw-bold">${c.name_en}</div>
@@ -44,8 +39,9 @@ function renderTiles(data) {
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const data = await loadData();
-    renderTiles(data);
+    // getCenters() is provided by js/db.js (Supabase)
+    const centers = await getCenters();
+    renderTiles(centers);
   } catch (e) {
     document.getElementById('tiles').innerHTML =
       `<div class="alert alert-danger">Error: ${e.message}</div>`;
