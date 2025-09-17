@@ -78,11 +78,11 @@ async function renderCenter(centerId) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const grid = document.getElementById('programGrid');
   try {
-    const id = getCenterId();
+    const id = getCenterId ? getCenterId() : (new URL(location.href)).searchParams.get('id');
     if (!id) {
-      document.getElementById('programGrid').innerHTML =
-        `<div class="alert alert-warning">Missing center id. Go back to the <a href="index.html">home page</a>.</div>`;
+      grid.innerHTML = `<div class="alert alert-warning">Missing center id. Go back to the <a href="index.html">home page</a>.</div>`;
       return;
     }
 
@@ -92,10 +92,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.refreshAfterLogin = () => renderCenter(id);
 
   } catch (e) {
-    document.getElementById('programGrid').innerHTML =
-      `<div class="alert alert-danger">Error: ${e.message}</div>`;
+    console.error('Center load error:', e);
+    grid.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${e.message || e}</div>`;
   }
 });
+
 
 // Clipboard handler for all copy buttons
 document.addEventListener('click', async (e) => {
