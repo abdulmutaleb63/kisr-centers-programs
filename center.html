@@ -172,6 +172,13 @@
       });
     });
   </script>
+  <script>
+  // If the page is restored from the back/forward cache, force a real reload
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) { location.reload(); }
+  });
+</script>
+
 </body>
 </html>
 
