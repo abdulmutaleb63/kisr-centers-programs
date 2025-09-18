@@ -78,12 +78,12 @@ footer { margin-top: auto; }  /* push footer to bottom */
   color: #fff;
 }
 /* Map center code -> hero background via CSS (paths relative to css/style.css) */
-.center-hero.hero-ENG  { background-image: url('../img/energy.jpg'); }
-.center-hero.hero-ENV  { background-image: url('../img/envkisr.jpg'); }
-.center-hero.hero-WAT  { background-image: url('../img/water.jpg'); }
-.center-hero.hero-PET  { background-image: url('../img/petr.jpg'); }
-.center-hero.hero-TE   { background-image: url('../img/ted.avif'); }   /* or change to an existing file */
-.center-hero.hero-QHSW { background-image: url('../img/QHSE.png'); }
+.center-hero.hero-EBRC  { background-image: url('../img/energy.jpg'); }
+.center-hero.hero-ELSRC { background-image: url('../img/envkisr.jpg'); }
+.center-hero.hero-WRC  { background-image: url('../img/water.jpg'); }
+.center-hero.hero-PRC  { background-image: url('../img/petr.jpg'); }
+.center-hero.hero-TED   { background-image: url('../img/ted.avif'); }   /* or change to an existing file */
+.center-hero.hero-QHSWED { background-image: url('../img/QHSE.png'); }
 .center-hero.hero-SSDD { background-image: url('../img/CODE.jpg'); }    /* or change to an existing file */
 
 .tile .tile-cover {
