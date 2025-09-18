@@ -77,15 +77,14 @@ footer { margin-top: auto; }  /* push footer to bottom */
   position: relative; z-index: 2;
   color: #fff;
 }
-/* Map center code -> hero background via CSS, not JS inline styles */
-.center-hero.hero-ENG { background-image: url('img/energy.jpg'); }
-.center-hero.hero-ENV { background-image: url('img/envkisr.jpg'); }
-.center-hero.hero-WAT { background-image: url('img/water.jpg'); }
-.center-hero.hero-PET { background-image: url('img/petr.jpg'); }
+/* Map center code -> hero background via CSS (paths relative to css/style.css) */
+.center-hero.hero-ENG  { background-image: url('../img/energy.jpg'); }
+.center-hero.hero-ENV  { background-image: url('../img/envkisr.jpg'); }
+.center-hero.hero-WAT  { background-image: url('../img/water.jpg'); }
+.center-hero.hero-PET  { background-image: url('../img/petr.jpg'); }
+.center-hero.hero-TE   { background-image: url('../img/tech.jpg'); }   /* or change to an existing file */
+.center-hero.hero-QHSW { background-image: url('../img/QHSE.png'); }
+.center-hero.hero-SSDD { background-image: url('../img/dev.jpg'); }    /* or change to an existing file */
 
-/* If you have local images for these, set them; otherwise keep the Unsplash or swap later */
-.center-hero.hero-TE  { background-image: url('img/tech.jpg'); }   /* add img/tech.jpg or change path */
-.center-hero.hero-QHSW{ background-image: url('img/QHSE.png'); }
-.center-hero.hero-SSDD{ background-image: url('img/dev.jpg'); }    /* add img/dev.jpg or change path */
 
 
