@@ -59,5 +59,23 @@ footer { margin-top: auto; }  /* push footer to bottom */
   padding: 2px 6px;
   line-height: 1.2;
 }
+/* Center hero */
+.center-hero {
+  position: relative;
+  min-height: 180px;
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid #e9ecef;
+}
+.center-hero::after{
+  content:"";
+  position:absolute; inset:0;
+  background: rgba(0,0,0,.25);
+  backdrop-filter: blur(2px);
+}
+.center-hero .container {
+  position: relative; z-index: 2;
+  color: #fff;
+}
 
 
