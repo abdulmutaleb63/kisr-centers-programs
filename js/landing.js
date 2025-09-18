@@ -1,3 +1,5 @@
+// js/landing.js — updated for new schema
+
 function tileImageFor(code) {
   const map = {
     ENG: 'img/energy.jpg',
@@ -14,32 +16,37 @@ function tileImageFor(code) {
 function renderTiles(centers) {
   const tiles = document.getElementById('tiles');
   tiles.innerHTML = '';
-  centers.slice().sort((a,b)=>a.name_en.localeCompare(b.name_en)).forEach(c => {
-    const col = document.createElement('div');
-    col.className = 'col-12 col-sm-6 col-lg-3';
-    col.innerHTML = `
-      <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden" href="center.html?id=${encodeURIComponent(c.center_id)}&t=${Date.now()}">
-        <div class="tile-img" style="background-image:url('${tileImageFor(c.code)}')"></div>
-        <div class="card-body">
-          <div class="small text-uppercase text-primary fw-bold">${c.name_en}</div>
-          <div class="text-muted small">${c.name_ar || ''}</div>
-        </div>
-      </a>`;
-    tiles.appendChild(col);
-  });
+
+  centers
+    .slice()
+    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
+    .forEach(c => {
+      const col = document.createElement('div');
+      col.className = 'col-12 col-sm-6 col-lg-3';
+      col.innerHTML = `
+        <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden"
+           href="center.html?id=${encodeURIComponent(c.id)}&t=${Date.now()}">
+          <div class="tile-img" style="background-image:url('${tileImageFor(c.code)}')"></div>
+          <div class="card-body">
+            <div class="small text-uppercase text-primary fw-bold">${(c.name || '').replace(/</g,'&lt;')}</div>
+            <div class="text-muted small">${c.code ? `Code: ${c.code}` : ''}</div>
+          </div>
+        </a>`;
+      tiles.appendChild(col);
+    });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   const tiles = document.getElementById('tiles');
   try {
-    const centers = await getCenters(); // from db.js
+    const centers = await getCenters(); // from db.js (returns id, code, name)
     if (!centers?.length) {
-      tiles.innerHTML = `<div class="alert alert-warning">No centers returned from database.</div>`;
+      tiles.innerHTML = `<div class="col-12"><div class="alert alert-warning mb-0">No centers returned from database.</div></div>`;
       return;
     }
     renderTiles(centers);
   } catch (e) {
     console.error(e);
-    tiles.innerHTML = `<div class="alert alert-danger"><strong>Load error:</strong> ${e.message || e}</div>`;
+    tiles.innerHTML = `<div class="col-12"><div class="alert alert-danger mb-0"><strong>Load error:</strong> ${e.message || e}</div></div>`;
   }
 });
