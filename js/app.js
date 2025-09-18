@@ -1,205 +1,234 @@
-let DATA = null;
+// app.js — unified “all centers & programs” view, now using Supabase (no auth, no JSON)
+
+// State
 let STATE = {
-  query: '',
-  centerId: '',
-  lang: 'en', // 'en' or 'ar'
-  expanded: new Set(JSON.parse(localStorage.getItem('expandedCenters') || '[]'))
+  query: "",
+  centerId: "",
+  lang: "en", // 'en' or 'ar' (we only have one name per item, so we mirror it)
+  expanded: new Set(JSON.parse(localStorage.getItem("expandedCenters") || "[]")),
 };
 
-async function loadData() {
-  const res = await fetch('data/programs.json', { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to load data/programs.json');
-  return res.json();
-}
-
+// Utilities
 function saveExpanded() {
-  localStorage.setItem('expandedCenters', JSON.stringify([...STATE.expanded]));
+  localStorage.setItem("expandedCenters", JSON.stringify([...STATE.expanded]));
+}
+function t(en, ar) { return STATE.lang === "ar" ? (ar || en || "") : (en || ar || ""); }
+function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[m])); }
+
+// Load from Supabase
+async function loadData() {
+  // centers(id, code, name)
+  const centers = await getCenters();
+
+  // programs(id, center_id, program_name, status, description, created_by, created_at)
+  const { data: programs, error } = await supa
+    .from("programs")
+    .select("id, center_id, program_name, status, description, created_by, created_at");
+  if (error) throw error;
+
+  return { centers, programs, meta: { version: "live", last_updated: new Date().toISOString() } };
 }
 
-function t(en, ar) {
-  return STATE.lang === 'ar' ? (ar || en || '') : (en || ar || '');
-}
-
+// Meta stamp
 function renderToolbarMeta(data) {
-  const meta = document.getElementById('metaStamp');
-  meta.textContent = `Version ${data.meta?.version ?? '1'} • Last updated: ${data.meta?.last_updated ?? 'N/A'}`;
+  const meta = document.getElementById("metaStamp");
+  if (!meta) return;
+  meta.textContent = `Live • Last updated: ${new Date(data.meta?.last_updated || Date.now()).toLocaleString()}`;
 }
 
+// Center filter
 function populateCenterFilter(data) {
-  const sel = document.getElementById('centerFilter');
-  // clear except first option
-  sel.options.length = 1;
+  const sel = document.getElementById("centerFilter");
+  if (!sel) return;
+  sel.options.length = 1; // keep first option
   data.centers
     .slice()
-    .sort((a,b)=>a.name_en.localeCompare(b.name_en))
+    .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")))
     .forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.center_id;
-      opt.textContent = `${c.code} — ${c.name_en}`;
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = `${c.code || "—"} — ${c.name}`;
       sel.appendChild(opt);
     });
 }
 
+// Compute filtered + grouped list
 function computeFiltered(data) {
   const q = STATE.query.trim().toLowerCase();
-  const byCenter = {};
-  const centersById = Object.fromEntries(data.centers.map(c => [c.center_id, c]));
 
+  const byCenter = {};
   data.programs.forEach(p => {
     (byCenter[p.center_id] ||= []).push(p);
   });
 
+  const centersById = Object.fromEntries(data.centers.map(c => [c.id, c]));
+
   const centerMatches = (c) => {
     if (!q) return true;
-    return [c.name_en, c.name_ar, c.code].some(v => (v||'').toLowerCase().includes(q));
+    return [c.name, c.code].some(v => (v || "").toLowerCase().includes(q));
   };
 
   const programMatches = (p, c) => {
     if (!q) return true;
-    return [p.name_en, p.name_ar, p.code, c?.name_en, c?.name_ar, c?.code]
-      .some(v => (v||'').toLowerCase().includes(q));
+    return [
+      p.program_name, p.description, p.created_by,
+      c?.name, c?.code
+    ].some(v => (v || "").toLowerCase().includes(q));
   };
 
   const result = [];
   data.centers.forEach(center => {
-    if (STATE.centerId && center.center_id !== STATE.centerId) return;
-
-    const programs = (byCenter[center.center_id] || [])
+    if (STATE.centerId && center.id !== STATE.centerId) return;
+    const programs = (byCenter[center.id] || [])
       .filter(p => programMatches(p, center))
-      .sort((a,b)=>a.name_en.localeCompare(b.name_en));
+      .sort((a, b) => String(a.program_name || "").localeCompare(String(b.program_name || "")));
 
     if (q && !centerMatches(center) && programs.length === 0) return;
     result.push({ center, programs });
   });
-
   return result;
 }
 
+// Summary
 function renderSummary(list) {
+  const el = document.getElementById("summary");
+  if (!el) return;
   const totalCenters = list.length;
   const totalPrograms = list.reduce((sum, x) => sum + x.programs.length, 0);
-  const summary = document.getElementById('summary');
-  summary.textContent = `Showing ${totalCenters} center(s), ${totalPrograms} program(s)`;
+  el.textContent = `Showing ${totalCenters} center(s), ${totalPrograms} program(s)`;
 }
 
+// Main render
 function render(data) {
-  const container = document.getElementById('content');
-  container.innerHTML = '';
+  const container = document.getElementById("content");
+  if (!container) return;
+  container.innerHTML = "";
+
   const list = computeFiltered(data);
   renderSummary(list);
 
   list.forEach(({ center, programs }) => {
-    const section = document.createElement('section');
-    section.className = 'center-card';
-    section.id = center.center_id;
+    const section = document.createElement("section");
+    section.className = "center-card";
+    section.id = center.id;
 
-    const isExpanded = STATE.expanded.has(center.center_id) || STATE.query || STATE.centerId;
+    const isExpanded = STATE.expanded.has(center.id) || STATE.query || STATE.centerId;
 
-    const header = document.createElement('div');
-    header.className = 'center-header';
+    const header = document.createElement("div");
+    header.className = "center-header";
 
-    const left = document.createElement('div');
-    left.className = 'center-title';
+    const left = document.createElement("div");
+    left.className = "center-title";
     left.innerHTML = `
-      <div class="fw-semibold">${t(center.name_en, center.name_ar)}</div>
-      <div class="text-secondary small">${t(center.name_ar, center.name_en)}</div>
+      <div class="fw-semibold">${escapeHtml(t(center.name, center.name))}</div>
+      <div class="text-secondary small">${escapeHtml(center.code || "")}</div>
     `;
 
-    const right = document.createElement('div');
-    right.className = 'center-actions';
+    const right = document.createElement("div");
+    right.className = "center-actions";
     right.innerHTML = `
       <span class="center-count small">${programs.length} programs</span>
-      <span class="program-code">${center.code}</span>
-      <span class="badge text-bg-light badge-status">${center.status || 'active'}</span>
-      <button class="btn btn-sm btn-outline-primary" data-toggle="${center.center_id}">
-        ${isExpanded ? (STATE.lang === 'ar' ? 'إخفاء' : 'Collapse') : (STATE.lang === 'ar' ? 'عرض' : 'Expand')}
+      <span class="badge text-bg-light badge-status">active</span>
+      <button class="btn btn-sm btn-outline-primary" data-toggle="${center.id}">
+        ${isExpanded ? (STATE.lang === "ar" ? "إخفاء" : "Collapse") : (STATE.lang === "ar" ? "عرض" : "Expand")}
       </button>
     `;
 
     header.appendChild(left);
     header.appendChild(right);
 
-    const listEl = document.createElement('ul');
-    listEl.className = 'program-list';
-    listEl.style.display = isExpanded ? '' : 'none';
+    const listEl = document.createElement("ul");
+    listEl.className = "program-list";
+    listEl.style.display = isExpanded ? "" : "none";
 
     programs.forEach(p => {
-      const li = document.createElement('li');
+      const li = document.createElement("li");
       li.innerHTML = `
         <div>
-          <div class="fw-medium">${t(p.name_en, p.name_ar)}</div>
-          <div class="text-secondary small">${t(p.name_ar, p.name_en)}</div>
+          <div class="fw-medium">${escapeHtml(t(p.program_name, p.program_name))}</div>
+          ${p.description ? `<div class="text-secondary small">${escapeHtml(p.description)}</div>` : ""}
         </div>
         <div class="text-end">
-          <div class="program-code">${p.code}</div>
-          <div class="small text-muted">${p.status || 'active'}</div>
+          <div class="small text-muted">${escapeHtml(p.status || "Active")}</div>
+          <div class="small text-muted">${p.created_by ? escapeHtml(p.created_by) + " · " : ""}${new Date(p.created_at).toLocaleDateString()}</div>
         </div>
       `;
       listEl.appendChild(li);
     });
 
-    section.appendChild(header);
-    section.appendChild(listEl);
-    container.appendChild(section);
+    const wrap = document.createElement("div");
+    wrap.appendChild(header);
+    wrap.appendChild(listEl);
+    container.appendChild(wrap);
   });
 
-  // wire up per-center toggles
-  container.querySelectorAll('button[data-toggle]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-toggle');
+  // Toggle handlers
+  container.querySelectorAll("button[data-toggle]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-toggle");
       const section = document.getElementById(id);
-      const listEl = section.querySelector('.program-list');
-      const open = listEl.style.display === 'none';
-      listEl.style.display = open ? '' : 'none';
+      const listEl = section.querySelector(".program-list");
+      const open = listEl.style.display === "none";
+      listEl.style.display = open ? "" : "none";
       if (open) STATE.expanded.add(id); else STATE.expanded.delete(id);
-      btn.textContent = open ? (STATE.lang === 'ar' ? 'إخفاء' : 'Collapse') : (STATE.lang === 'ar' ? 'عرض' : 'Expand');
+      btn.textContent = open ? (STATE.lang === "ar" ? "إخفاء" : "Collapse") : (STATE.lang === "ar" ? "عرض" : "Expand");
       saveExpanded();
     });
   });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+// Boot
+document.addEventListener("DOMContentLoaded", async () => {
+  const content = document.getElementById("content");
   try {
-    DATA = await loadData();
+    content && (content.innerHTML = `<div class="alert alert-secondary">Loading…</div>`);
+    const DATA = await loadData();
+
     renderToolbarMeta(DATA);
     populateCenterFilter(DATA);
     render(DATA);
 
     // search
-    document.getElementById('searchInput').addEventListener('input', (e) => {
+    const searchInput = document.getElementById("searchInput");
+    searchInput && searchInput.addEventListener("input", (e) => {
       STATE.query = e.target.value;
       render(DATA);
     });
 
     // center filter
-    document.getElementById('centerFilter').addEventListener('change', (e) => {
+    const centerFilter = document.getElementById("centerFilter");
+    centerFilter && centerFilter.addEventListener("change", (e) => {
       STATE.centerId = e.target.value;
       render(DATA);
     });
 
     // expand/collapse all
-    document.getElementById('expandAllBtn').addEventListener('click', () => {
-      const anyCollapsed = document.querySelectorAll('.program-list').length > document.querySelectorAll('.program-list:not([style*="display: none"])').length;
-      // if any collapsed, expand all; otherwise collapse all
-      STATE.expanded = new Set(anyCollapsed ? DATA.centers.map(c=>c.center_id) : []);
+    const expandAllBtn = document.getElementById("expandAllBtn");
+    expandAllBtn && expandAllBtn.addEventListener("click", () => {
+      const allIds = DATA.centers.map(c => c.id);
+      const anyCollapsed = document.querySelectorAll(".program-list").length >
+                           document.querySelectorAll('.program-list:not([style*="display: none"])').length;
+      STATE.expanded = new Set(anyCollapsed ? allIds : []);
       saveExpanded();
       render(DATA);
     });
 
-    // language toggle
-    const langToggle = document.getElementById('langToggle');
-    langToggle.addEventListener('change', (e) => {
-      STATE.lang = e.target.checked ? 'ar' : 'en';
-      document.documentElement.dir = STATE.lang === 'ar' ? 'rtl' : 'ltr';
+    // language toggle (kept for future bilingual fields)
+    const langToggle = document.getElementById("langToggle");
+    langToggle && langToggle.addEventListener("change", (e) => {
+      STATE.lang = e.target.checked ? "ar" : "en";
+      document.documentElement.dir = STATE.lang === "ar" ? "rtl" : "ltr";
       render(DATA);
-      // update filter labels to EN (keep options as EN list for now)
     });
 
     // print
-    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    const printBtn = document.getElementById("printBtn");
+    printBtn && printBtn.addEventListener("click", () => window.print());
 
   } catch (err) {
-    document.getElementById('content').innerHTML =
-      `<div class="alert alert-danger">Error: ${err.message}</div>`;
+    console.error(err);
+    if (content) {
+      content.innerHTML = `<div class="alert alert-danger">Error: ${escapeHtml(err.message || String(err))}</div>`;
+    }
   }
 });
