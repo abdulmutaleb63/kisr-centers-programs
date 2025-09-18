@@ -7,9 +7,9 @@ function tileSrcFor(code) {
     ELSRC: 'img/envkisr.jpg',
     WRC: 'img/water.jpg',
     PRC: 'img/petr.jpg',
-    TED:  'img/tech.jpg',   // use any local image you have
+    TED:  'img/ted.avif',   // use any local image you have
     QHSWED:'img/QHSE.png',
-    SSDD:'img/dev.jpg'     // use any local image you have
+    SSDD:'img/CODE.jpg'     // use any local image you have
   };
   return map[code] || 'img/energy.jpg';
 }
