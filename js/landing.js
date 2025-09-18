@@ -3,12 +3,12 @@
 // map center code -> HTML-relative image path
 function tileSrcFor(code) {
   const map = {
-    ENG: 'img/energy.jpg',
-    ENV: 'img/envkisr.jpg',
-    WAT: 'img/water.jpg',
-    PET: 'img/petr.jpg',
-    TE:  'img/tech.jpg',   // use any local image you have
-    QHSW:'img/QHSE.png',
+    EBRC: 'img/energy.jpg',
+    ELSRC: 'img/envkisr.jpg',
+    WRC: 'img/water.jpg',
+    PRC: 'img/petr.jpg',
+    TED:  'img/tech.jpg',   // use any local image you have
+    QHSWED:'img/QHSE.png',
     SSDD:'img/dev.jpg'     // use any local image you have
   };
   return map[code] || 'img/energy.jpg';
