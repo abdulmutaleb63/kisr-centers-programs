@@ -86,5 +86,12 @@ footer { margin-top: auto; }  /* push footer to bottom */
 .center-hero.hero-QHSW { background-image: url('../img/QHSE.png'); }
 .center-hero.hero-SSDD { background-image: url('../img/dev.jpg'); }    /* or change to an existing file */
 
+.tile .tile-cover {
+  width: 100%;
+  height: clamp(120px, 18vw, 200px);
+  object-fit: cover;
+  display: block;
+  background: #eee; /* neutral placeholder before image loads */
+}
 
 
