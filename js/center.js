@@ -1,137 +1,128 @@
+// js/center.js — simplified to new schema (no auth)
+
+/** Get center id from URL */
 function getCenterId() {
   const u = new URL(location.href);
   return (
-    u.searchParams.get('id')   ||
-    u.searchParams.get('ID')   ||
-    u.searchParams.get('Id')   ||
-    u.searchParams.get('hnID') ||
-    u.searchParams.get('lnID')
+    u.searchParams.get("id") ||
+    u.searchParams.get("ID") ||
+    u.searchParams.get("Id") ||
+    u.searchParams.get("hnID") ||
+    u.searchParams.get("lnID")
   );
 }
 
+/** Render center header + program cards */
 async function renderCenter(centerId) {
-  // Load center from DB
-  const centers = await getCenters(); // from db.js (Supabase)
-  const center = centers.find(c => c.center_id === centerId);
-  const grid = document.getElementById('programGrid');
+  const grid = document.getElementById("programGrid");
+
+  // Load center
+  const centers = await getCenters(); // from db.js
+  const center = centers.find((c) => c.id === centerId);
 
   if (!center) {
-    grid.innerHTML = `<div class="alert alert-warning">Center not found.</div>`;
+    grid.innerHTML =
+      `<div class="col-12"><div class="alert alert-warning mb-0">Center not found.</div></div>`;
+    document.getElementById("centerTitle").textContent = "Center not found";
+    document.getElementById("centerSubtitle").textContent = "";
     return;
   }
 
   // Titles
-  document.getElementById('centerTitle').textContent = center.name_en;
-  document.getElementById('centerSubtitle').textContent = center.name_ar || '';
+  document.getElementById("centerTitle").textContent = center.name;
+  document.getElementById("centerSubtitle").textContent = `Code: ${center.code || "-"}`;
 
-  // Programs from DB
-  const progs = await getPrograms(center.center_id);
-  grid.innerHTML = '';
+  // Expose center_id to Add Program wrapper (used by center.html inline script)
+  const addWrap = document.getElementById("addProgramWrap");
+  if (addWrap) addWrap.dataset.centerId = center.id;
+
+  // Load programs
+  grid.innerHTML =
+    `<div class="col-12"><div class="alert alert-secondary mb-0">Loading programs…</div></div>`;
+
+  const progs = await getPrograms(center.id); // from db.js
+  grid.innerHTML = "";
 
   if (!progs.length) {
-    grid.innerHTML = `<div class="alert alert-info">No active programs listed.</div>`;
-  } else {
-    progs.forEach(p => {
-      const col = document.createElement('div');
-      col.className = 'col-12 col-md-6 col-lg-4';
+    grid.innerHTML =
+      `<div class="col-12"><div class="alert alert-info mb-0">No programs yet for this center.</div></div>`;
+    return;
+  }
 
-      const enText = p.name_en || '';
-      const arText = p.name_ar || '';
-      const enAttr = enText.replace(/"/g, '&quot;');
-      const arAttr = arText.replace(/"/g, '&quot;');
+  // Render program cards
+  progs.forEach((p) => {
+    const col = document.createElement("div");
+    col.className = "col-12 col-md-6 col-lg-4";
 
-      col.innerHTML = `
-        <div class="card h-100 shadow-sm">
-          <div class="card-body d-flex flex-column">
-            <div class="fw-semibold mb-1 d-flex justify-content-between align-items-center gap-2">
-              <span>${enText}</span>
-              <button class="btn btn-sm btn-outline-secondary copy-btn"
-                      data-text="${enAttr}"
-                      title="Copy English name">Copy EN</button>
-            </div>
-            <div class="text-muted small mb-3 d-flex justify-content-between align-items-center gap-2">
-              <span>${arText}</span>
-              <button class="btn btn-sm btn-outline-secondary copy-btn"
-                      data-text="${arAttr}"
-                      title="Copy Arabic name">نسخ</button>
-            </div>
-            <div class="mt-auto d-flex align-items-center justify-content-between">
-              <span class="badge text-bg-light">${p.code}</span>
-              <small class="text-muted">${p.status || 'active'}</small>
-            </div>
+    const name = p.program_name || "";
+    const nameAttr = name.replace(/"/g, "&quot;"); // for data-text
+    const descHtml = p.description ? `<p class="mt-2 mb-3 text-muted small">${escapeHtml(p.description)}</p>` : "";
+
+    col.innerHTML = `
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <h5 class="card-title mb-0">${escapeHtml(name)}</h5>
+            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'}">${escapeHtml(p.status || '')}</span>
+          </div>
+          ${descHtml}
+          <div class="mt-auto d-flex justify-content-between align-items-center">
+            <button class="btn btn-sm btn-outline-secondary copy-btn" data-text="${nameAttr}" title="Copy program name">Copy</button>
+            <small class="text-muted">
+              ${(p.created_by ? `${escapeHtml(p.created_by)} · ` : "")}${new Date(p.created_at).toLocaleDateString()}
+            </small>
           </div>
         </div>
-      `;
-      grid.appendChild(col);
-    });
-  }
-
-  // Expose center_id to the Add Program modal wrapper
-  const addWrap = document.getElementById('addProgramWrap');
-  if (addWrap) {
-    addWrap.dataset.centerId = center.center_id;
-
-    // Show/hide Add button based on auth session
-    const session = await getSession();
-    addWrap.classList.toggle('d-none', !session);
-  }
+      </div>
+    `;
+    grid.appendChild(col);
+  });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const grid = document.getElementById('programGrid');
+document.addEventListener("DOMContentLoaded", async () => {
+  const grid = document.getElementById("programGrid");
   try {
-    const id = getCenterId ? getCenterId() : (new URL(location.href)).searchParams.get('id');
+    const id = getCenterId();
     if (!id) {
-      grid.innerHTML = `<div class="alert alert-warning">Missing center id. Go back to the <a href="index.html">home page</a>.</div>`;
+      grid.innerHTML =
+        `<div class="col-12"><div class="alert alert-warning mb-0">Missing center id. Go back to the <a href="index.html">home page</a>.</div></div>`;
+      document.getElementById("centerTitle").textContent = "No center selected";
+      document.getElementById("centerSubtitle").textContent = "";
       return;
     }
 
     await renderCenter(id);
 
-    // Refresh after login or after adding a program
-    window.refreshAfterLogin = () => renderCenter(id);
-
   } catch (e) {
-    console.error('Center load error:', e);
-    grid.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> ${e.message || e}</div>`;
+    console.error("Center load error:", e);
+    grid.innerHTML =
+      `<div class="col-12"><div class="alert alert-danger mb-0"><strong>Error:</strong> ${e.message || e}</div></div>`;
   }
 });
 
-
-// Clipboard handler for all copy buttons
-document.addEventListener('click', async (e) => {
-  const btn = e.target.closest('.copy-btn');
+// Clipboard handler for "Copy" buttons
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".copy-btn");
   if (!btn) return;
-  const text = (btn.dataset.text || '').trim();
+  const text = (btn.dataset.text || "").trim();
   if (!text) return;
-
   try {
     await navigator.clipboard.writeText(text);
     const original = btn.textContent;
-    btn.textContent = '✓ Copied';
+    btn.textContent = "✓ Copied";
     btn.disabled = true;
     setTimeout(() => {
       btn.textContent = original;
       btn.disabled = false;
     }, 1200);
   } catch (err) {
-    alert('Copy failed: ' + err);
+    alert("Copy failed: " + err);
   }
 });
 
-// Refresh UI if user returns via Back/Forward
-window.addEventListener('pageshow', () => {
-  const u = new URL(location.href);
-  const id = (u.searchParams.get('id') || u.searchParams.get('ID') || u.searchParams.get('Id') || u.searchParams.get('hnID') || u.searchParams.get('lnID'));
+// If page is restored from bfcache, re-render to refresh data
+window.addEventListener("pageshow", () => {
+  const id = getCenterId();
   if (id) renderCenter(id);
 });
-// Re-run renderCenter if Chrome restores the page from bfcache
-window.addEventListener('pageshow', () => {
-  const u = new URL(location.href);
-  const id =
-    u.searchParams.get('id') ||
-    u.searchParams.get('ID') ||
-    u.searchParams.get('hnID') ||
-    u.searchParams.get('lnID');
-  if (id) renderCenter(id);
-});
+
