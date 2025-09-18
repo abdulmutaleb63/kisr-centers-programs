@@ -8,14 +8,13 @@
   <link href="css/style.css?v=5" rel="stylesheet">
 </head>
 <body>
-  <!-- Top bar with KISR logo (auth removed) -->
+  <!-- Top bar with KISR logo -->
   <nav class="navbar bg-white border-bottom sticky-top">
     <div class="container d-flex align-items-center justify-content-between">
       <a class="navbar-brand d-flex align-items-center gap-2" href="#">
         <img src="img/kisrlogo.png" alt="KISR" width="120">
         <span class="fw-bold">Centers & Programs</span>
       </a>
-      <!-- (No auth buttons) -->
     </div>
   </nav>
 
@@ -28,72 +27,19 @@
 
   <main class="container py-4">
     <!-- Tiles grid -->
-    <div id="tiles" class="row g-4"><!-- JS injects tiles --></div>
+    <div id="tiles" class="row g-4"><!-- landing.js injects tiles --></div>
   </main>
 
   <footer class="mt-5">
     <img src="img/kisrfooter.png" alt="" class="footer-img">
   </footer>
 
-  <!-- JS: Bootstrap + Supabase + page script (auth removed) -->
+  <!-- JS: Bootstrap + Supabase + our external scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    // --- Supabase client (uses your provided URL + anon key) ---
-    const SUPABASE_URL = "https://abvbsvidylgeavqevuaq.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFidmJzdmlkeWxnZWF2cWV2dWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxODExNzcsImV4cCI6MjA3Mzc1NzE3N30.ObsCtITyrdRmQ6ISzLIvy-SrtI4Yj0X15BdwS_-NDn8";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Utility: escape HTML
-    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-
-    async function loadCenters() {
-      const tiles = document.getElementById('tiles');
-      tiles.innerHTML = `
-        <div class="col-12">
-          <div class="alert alert-secondary mb-0">Loading centers…</div>
-        </div>`;
-
-      const { data, error } = await supabaseClient
-        .from('centers')
-        .select('id, code, name')
-        .order('name', { ascending: true });
-
-      if (error) {
-        console.error(error);
-        tiles.innerHTML = `
-          <div class="col-12">
-            <div class="alert alert-danger mb-0">Could not load centers. Please try again later.</div>
-          </div>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        tiles.innerHTML = `
-          <div class="col-12">
-            <div class="alert alert-info mb-0">No centers found. Seed the <code>centers</code> table to begin.</div>
-          </div>`;
-        return;
-      }
-
-      // Render simple cards linking to a center page (e.g., center.html?id=...)
-      tiles.innerHTML = data.map(c => `
-        <div class="col-12 col-sm-6 col-lg-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <div class="text-muted small mb-1">${esc(c.code)}</div>
-              <h5 class="card-title mb-3">${esc(c.name)}</h5>
-              <div class="mt-auto d-grid">
-                <a class="btn btn-primary" href="center.html?id=${encodeURIComponent(c.id)}">Open programs</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    document.addEventListener('DOMContentLoaded', loadCenters);
-  </script>
+  <!-- Our app scripts -->
+  <script src="js/db.js?v=8"></script>
+  <script src="js/landing.js?v=8"></script>
 </body>
 </html>
