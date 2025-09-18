@@ -1,17 +1,19 @@
-// js/landing.js — updated for new schema
-
-function tileImageFor(code) {
+// helper: map center code -> image path (HTML-relative)
+function tileSrcFor(code) {
   const map = {
     ENG: 'img/energy.jpg',
     ENV: 'img/envkisr.jpg',
     WAT: 'img/water.jpg',
     PET: 'img/petr.jpg',
-    TE:  'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1200&auto=format&fit=crop',
+    TE:  'img/tech.jpg',   // use any local placeholder you have
     QHSW:'img/QHSE.png',
-    SSDD:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop'
+    SSDD:'img/dev.jpg'     // use any local placeholder you have
   };
-  return map[code] || 'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1200&auto=format&fit=crop';
+  return map[code] || 'img/energy.jpg';
 }
+
+// optional default if the specific image 404s
+const DEFAULT_TILE_SRC = 'img/energy.jpg';
 
 function renderTiles(centers) {
   const tiles = document.getElementById('tiles');
@@ -22,31 +24,23 @@ function renderTiles(centers) {
     .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
     .forEach(c => {
       const col = document.createElement('div');
-      col.className = 'col-12 col-sm-6 col-lg-3';
+      col.className = 'col-12 col-sm-6 col-lg-4';
+
+      const imgSrc = tileSrcFor(c.code);
+
       col.innerHTML = `
         <a class="tile card text-decoration-none shadow-sm h-100 border-0 overflow-hidden"
            href="center.html?id=${encodeURIComponent(c.id)}&t=${Date.now()}">
-          <div class="tile-img" style="background-image:url('${tileImageFor(c.code)}')"></div>
+
+          <!-- real image so the browser will fetch it and you can see it in Network -->
+          <img class="tile-cover" src="${imgSrc}" alt="${(c.name || '').replace(/"/g, '&quot;')}"
+               onerror="this.onerror=null; this.src='${DEFAULT_TILE_SRC}'">
+
           <div class="card-body">
-            <div class="small text-uppercase text-primary fw-bold">${(c.name || '').replace(/</g,'&lt;')}</div>
-            <div class="text-muted small">${c.code ? `Code: ${c.code}` : ''}</div>
+            <div class="small text-uppercase text-primary fw-bold">${(c.code || '').replace(/</g,'&lt;')}</div>
+            <div class="fw-semibold">${(c.name || '').replace(/</g,'&lt;')}</div>
           </div>
         </a>`;
       tiles.appendChild(col);
     });
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const tiles = document.getElementById('tiles');
-  try {
-    const centers = await getCenters(); // from db.js (returns id, code, name)
-    if (!centers?.length) {
-      tiles.innerHTML = `<div class="col-12"><div class="alert alert-warning mb-0">No centers returned from database.</div></div>`;
-      return;
-    }
-    renderTiles(centers);
-  } catch (e) {
-    console.error(e);
-    tiles.innerHTML = `<div class="col-12"><div class="alert alert-danger mb-0"><strong>Load error:</strong> ${e.message || e}</div></div>`;
-  }
-});
