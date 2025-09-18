@@ -1,4 +1,18 @@
-// js/center.js — simplified to new schema (no auth)
+// js/center.js — simplified to new schema (no auth) + hero cover image
+
+/** Map a center code to its hero background image */
+function heroImageFor(code) {
+  const map = {
+    ENG: 'img/energy.jpg',
+    ENV: 'img/envkisr.jpg',
+    WAT: 'img/water.jpg',
+    PET: 'img/petr.jpg',
+    TE:  'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1600&auto=format&fit=crop',
+    QHSW:'img/QHSE.png',
+    SSDD:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1600&auto=format&fit=crop'
+  };
+  return map[code] || 'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1600&auto=format&fit=crop';
+}
 
 /** Get center id from URL */
 function getCenterId() {
@@ -27,6 +41,15 @@ async function renderCenter(centerId) {
     document.getElementById("centerSubtitle").textContent = "";
     return;
   }
+
+  // ---- HERO COVER IMAGE ----
+  const headerEl = document.querySelector("header");
+  if (headerEl) {
+    // make sure it has the hero class (in case HTML wasn't updated yet)
+    headerEl.classList.add("center-hero");
+    headerEl.style.backgroundImage = `url('${heroImageFor(center.code)}')`;
+  }
+  // --------------------------
 
   // Titles
   document.getElementById("centerTitle").textContent = center.name;
@@ -125,4 +148,3 @@ window.addEventListener("pageshow", () => {
   const id = getCenterId();
   if (id) renderCenter(id);
 });
-
