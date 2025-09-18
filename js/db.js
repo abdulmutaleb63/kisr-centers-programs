@@ -28,29 +28,57 @@ function onAuthChange(cb) {
 
 // ===== Data access =====
 // Centers
+// ---- READ: use REST (anon key) ----
 async function getCenters() {
-  const { data, error } = await supa.from('centers')
-    .select('center_id, code, name_en, name_ar, status')
-    .order('name_en', { ascending: true });
-  if (error) throw error;
-  return data;
+  const url = `${SUPABASE_URL}/rest/v1/centers?select=center_id,code,name_en,name_ar,status&order=name_en.asc`;
+  const r = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!r.ok) throw new Error(`centers fetch failed: ${r.status}`);
+  return r.json();
 }
 
-// Programs by center
 async function getPrograms(centerId) {
-  const { data, error } = await supa.from('programs')
-    .select('program_id, center_id, code, name_en, name_ar, status, created_at, created_by')
-    .eq('center_id', centerId)
-    .eq('status', 'active')
-    .order('name_en', { ascending: true });
-  if (error) throw error;
-  return data;
+  const url = `${SUPABASE_URL}/rest/v1/programs?select=program_id,center_id,code,name_en,name_ar,status,created_at,created_by&center_id=eq.${encodeURIComponent(centerId)}&status=eq.active&order=name_en.asc`;
+  const r = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Accept': 'application/json'
+    }
+  });
+  if (!r.ok) throw new Error(`programs fetch failed: ${r.status}`);
+  return r.json();
 }
 
-// Insert program (requires authenticated SRID user per RLS)
+// ---- WRITE: use REST with the user's access token ----
 async function addProgram({ center_id, code, name_en, name_ar }) {
-  const { data, error } = await supa.from('programs').insert([{ center_id, code, name_en, name_ar }]).select();
-  if (error) throw error;
-  return data[0];
+  // must be logged in; get a fresh access token
+  const { data } = await supa.auth.getSession();
+  const access_token = data?.session?.access_token;
+  if (!access_token) throw new Error('Not logged in');
+
+  const url = `${SUPABASE_URL}/rest/v1/programs`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${access_token}`,   // <- use user token for RLS
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify([{ center_id, code, name_en, name_ar }])
+  });
+
+  if (!r.ok) {
+    const err = await r.text();
+    throw new Error(`insert failed: ${r.status} ${err}`);
+  }
+  const [row] = await r.json();
+  return row;
 }
 
