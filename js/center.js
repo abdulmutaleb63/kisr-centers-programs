@@ -2,7 +2,7 @@
 
 /** Map a center code to the CSS class we’ll add */
 function heroClassFor(code) {
-  const allowed = ['ENG','ENV','WAT','PET','TE','QHSW','SSDD'];
+  const allowed = ['EBRC','ELSRC','WRC','PRC','TED','QHSWED','SSDD'];
   return allowed.includes(code) ? `hero-${code}` : 'hero-ENG';
 }
 
