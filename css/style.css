@@ -21,7 +21,7 @@ footer { margin-top: auto; }
 .footer-img{
   width:100%;
   height: clamp(70px, 12vw, 160px);
-  object-fit:cover;
+  object-fit:cover; 
   display:block;
 }
 
