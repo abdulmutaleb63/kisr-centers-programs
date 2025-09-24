@@ -1,5 +1,5 @@
 // js/db.js  — simplified (no auth), wired to your Supabase
-// Adds program_code (abbreviation) support
+// Schema now: programs(id, center_id, program_name, program_code, status, created_at)
 
 // === Supabase client (your project) ===
 const SUPABASE_URL = "https://abvbsvidylgeavqevuaq.supabase.co";
@@ -31,7 +31,7 @@ function onAuthChange(cb) {
 // -----------------------------
 // Data access (matches schema)
 // centers(id, code, name)
-// programs(id, center_id, program_name, program_code, status, description, created_by, created_at)
+// programs(id, center_id, program_name, program_code, status, created_at)
 // -----------------------------
 
 // READ: centers list
@@ -45,11 +45,11 @@ async function getCenters() {
   return data || [];
 }
 
-// READ: programs for a center (includes program_code)
+// READ: programs for a center (includes program_code; no desc/created_by)
 async function getPrograms(centerId) {
   const { data, error } = await supa
     .from("programs")
-    .select("id, center_id, program_name, program_code, status, description, created_by, created_at")
+    .select("id, center_id, program_name, program_code, status, created_at")
     .eq("center_id", centerId)
     .order("created_at", { ascending: false });
 
@@ -57,15 +57,15 @@ async function getPrograms(centerId) {
   return data || [];
 }
 
-// helper: normalize program_code (trim + collapse spaces -> no spaces; upper-case)
+// helper: normalize program_code (trim → no spaces → UPPERCASE)
 function normalizeCode(code) {
   if (!code) return null;
   const cleaned = String(code).trim().replace(/\s+/g, "");
   return cleaned ? cleaned.toUpperCase() : null;
 }
 
-// WRITE: add a program (anonymous insert allowed by RLS)
-async function addProgram({ center_id, program_name, program_code = "", status = "Active", description = "", created_by = "" }) {
+// WRITE: add a program (no description/created_by)
+async function addProgram({ center_id, program_name, program_code = "", status = "Active" }) {
   if (!center_id || !program_name?.trim()) {
     throw new Error("center_id and program_name are required.");
   }
@@ -73,10 +73,8 @@ async function addProgram({ center_id, program_name, program_code = "", status =
   const payload = {
     center_id,
     program_name: program_name.trim(),
-    program_code: normalizeCode(program_code), // NEW: abbreviation
-    status,
-    description,
-    created_by
+    program_code: normalizeCode(program_code),
+    status
   };
 
   const { data, error } = await supa
