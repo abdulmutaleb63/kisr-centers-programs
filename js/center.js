@@ -1,9 +1,9 @@
-// js/center.js — no auth + hero cover via CSS classes + abbreviation UI
+// js/center.js — no auth + hero cover via CSS classes + abbreviation UI (polished)
 
-/** Map a center code to the CSS class we’ll add (must match centers.code in DB) */
+/** Map a center code to the CSS class we’ll add (must match your CSS & DB) */
 function heroClassFor(code) {
-  const allowed = ['EBRC','ELSRC','WRC','PRC','TED','QHSWED','SSDD'];
-  return allowed.includes(code) ? `hero-${code}` : 'hero-ENG';
+  const allowed = ['EBRC', 'ELSRC', 'WRC', 'PRC', 'TED', 'QHSWED', 'SSDD'];
+  return allowed.includes(code) ? `hero-${code}` : 'hero-EBRC';
 }
 
 /** Get center id from URL */
@@ -40,7 +40,7 @@ async function renderCenter(centerId) {
     headerEl.classList.add("center-hero");
     // remove any previous hero-* class
     headerEl.className = headerEl.className.replace(/\bhero-[A-Z]+\b/g, "").trim();
-    headerEl.classList.add(heroClassFor(center.code || 'ENG'));
+    headerEl.classList.add(heroClassFor(center.code || 'EBRC'));
   }
   // --------------------------------------------
 
@@ -65,7 +65,7 @@ async function renderCenter(centerId) {
     return;
   }
 
-  // Render program cards (now shows abbreviation + copy buttons)
+  // Render program cards (shows abbreviation + copy buttons, uses .program-meta/footer)
   progs.forEach((p) => {
     const col = document.createElement("div");
     col.className = "col-12 col-md-6 col-lg-4";
@@ -81,26 +81,26 @@ async function renderCenter(centerId) {
       : "";
 
     col.innerHTML = `
-      <div class="card h-100 shadow-sm">
+      <div class="card h-100">
         <div class="card-body d-flex flex-column">
           <div class="d-flex justify-content-between align-items-start gap-2">
             <h5 class="card-title mb-0">${escapeHtml(name)}</h5>
-            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'}">
+            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'} badge-status">
               ${escapeHtml(p.status || '')}
             </span>
           </div>
 
           ${code ? `
-          <div class="mt-1 d-flex align-items-center gap-2">
-            <span class="badge text-bg-light">${escapeHtml(code)}</span>
-            <button class="btn btn-sm btn-outline-secondary copy-btn"
-                    data-text="${codeAttr}"
-                    title="Copy abbreviation">Copy code</button>
-          </div>` : ''}
+            <div class="program-meta">
+              <span class="badge text-bg-light">${escapeHtml(code)}</span>
+              <button class="btn btn-sm btn-outline-secondary copy-btn"
+                      data-text="${codeAttr}"
+                      title="Copy abbreviation">Copy code</button>
+            </div>` : ''}
 
           ${descHtml}
 
-          <div class="mt-auto d-flex justify-content-between align-items-center">
+          <div class="program-footer">
             <button class="btn btn-sm btn-outline-secondary copy-btn"
                     data-text="${nameAttr}"
                     title="Copy program name">Copy name</button>
@@ -166,7 +166,7 @@ window.addEventListener("pageshow", () => {
     if (c && headerEl) {
       headerEl.classList.add("center-hero");
       headerEl.className = headerEl.className.replace(/\bhero-[A-Z]+\b/g, "").trim();
-      headerEl.classList.add(heroClassFor(c.code || 'ENG'));
+      headerEl.classList.add(heroClassFor(c.code || 'EBRC'));
     }
   }).catch(()=>{});
 });
