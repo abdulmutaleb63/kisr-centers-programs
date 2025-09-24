@@ -55,6 +55,8 @@
         </div>
         <div class="modal-body vstack gap-3">
           <input class="form-control" id="progName" placeholder="Program name (English) *" required>
+          <!-- NEW: Abbreviation -->
+          <input class="form-control" id="progAbbr" placeholder="Abbreviation (e.g., REEE, BI) — optional" maxlength="32">
           <select class="form-select" id="progStatus">
             <option>Active</option>
             <option>Inactive</option>
@@ -92,6 +94,7 @@
 
         const centerId = document.getElementById('addProgramWrap')?.dataset.centerId;
         const program_name = document.getElementById('progName').value.trim();
+        const program_code = document.getElementById('progAbbr').value.trim(); // NEW
         const status = document.getElementById('progStatus').value.trim();
         const description = document.getElementById('progDesc').value.trim();
         const created_by = document.getElementById('progBy').value.trim();
@@ -103,22 +106,20 @@
         }
 
         try {
-          await addProgram({ center_id: centerId, program_name, status, description, created_by });
+          await addProgram({ center_id: centerId, program_name, program_code, status, description, created_by });
           // reset + close
           form.reset();
           document.getElementById('progStatus').value = 'Active';
           modal.hide();
-          // refresh list
-          const id = centerId;
-          const grid = document.getElementById('programGrid');
-          grid.innerHTML = `<div class="col-12"><div class="alert alert-secondary mb-0">Refreshing…</div></div>`;
-          const progs = await getPrograms(id);
-          grid.innerHTML = '';
-          // Let center.js re-render fully:
+          // Reload to let center.js re-render list
           window.location.reload();
         } catch (e) {
           const msg = (e.message || '').toLowerCase();
-          err.textContent = msg.includes('uq_program_unique') ? 'This program already exists for this center.' : (e.message || 'Could not add program.');
+          if (msg.includes('uq_program_code_per_center') || msg.includes('uq_program_code') || msg.includes('unique')) {
+            err.textContent = 'This program (name or abbreviation) already exists for this center.';
+          } else {
+            err.textContent = e.message || 'Could not add program.';
+          }
           err.classList.remove('d-none');
         }
       });
