@@ -78,37 +78,33 @@ async function renderCenter(centerId) {
 
     const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString() : "";
 
-col.innerHTML = `
-  <div class="card h-100">
-    <div class="card-body d-flex flex-column">
-      <div class="d-flex justify-content-between align-items-start gap-2">
-        <h5 class="card-title mb-0 d-flex align-items-center gap-2">
-          ${escapeHtml(name)}
-          <button class="btn btn-sm btn-primary copy-btn"
-                  data-text="${nameAttr}"
-                  title="Copy program name">Copy name</button>
-        </h5>
-        <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'} badge-status">
-          ${escapeHtml(p.status || '')}
-        </span>
+    col.innerHTML = `
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <h5 class="card-title mb-0">${escapeHtml(name)}</h5>
+            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'} badge-status">
+              ${escapeHtml(p.status || '')}
+            </span>
+          </div>
+
+          ${code ? `
+            <div class="program-meta">
+              <span class="badge text-bg-light">${escapeHtml(code)}</span>
+              <button class="btn btn-sm btn-outline-secondary copy-btn"
+                      data-text="${codeAttr}"
+                      title="Copy abbreviation">Copy code</button>
+            </div>` : ''}
+
+          <div class="program-footer">
+            <button class="btn btn-sm btn-outline-secondary copy-btn"
+                    data-text="${nameAttr}"
+                    title="Copy program name">Copy name</button>
+            <small class="text-muted">${dateStr}</small>
+          </div>
+        </div>
       </div>
-
-      ${code ? `
-        <div class="mt-2 d-flex align-items-center gap-2">
-          <span class="badge text-bg-light">${escapeHtml(code)}</span>
-          <button class="btn btn-sm btn-primary copy-btn"
-                  data-text="${codeAttr}"
-                  title="Copy abbreviation">Copy code</button>
-        </div>` : ''}
-
-      ${descHtml}
-
-      <div class="mt-auto text-muted small text-end">
-        ${new Date(p.created_at).toLocaleDateString()}
-      </div>
-    </div>
-  </div>
-`;
+    `;
     grid.appendChild(col);
   });
 }
@@ -168,3 +164,4 @@ window.addEventListener("pageshow", () => {
     }
   }).catch(()=>{});
 });
+
