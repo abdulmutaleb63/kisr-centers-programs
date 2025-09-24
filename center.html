@@ -55,7 +55,6 @@
         </div>
         <div class="modal-body vstack gap-3">
           <input class="form-control" id="progName" placeholder="Program name (English) *" required>
-          <!-- NEW: Abbreviation -->
           <input class="form-control" id="progAbbr" placeholder="Abbreviation (e.g., REEE, BI) — optional" maxlength="32">
           <select class="form-select" id="progStatus">
             <option>Active</option>
@@ -92,10 +91,8 @@
 
         const centerId = document.getElementById('addProgramWrap')?.dataset.centerId;
         const program_name = document.getElementById('progName').value.trim();
-        const program_code = document.getElementById('progAbbr').value.trim(); // NEW
+        const program_code = document.getElementById('progAbbr').value.trim();
         const status = document.getElementById('progStatus').value.trim();
-        const description = document.getElementById('progDesc').value.trim();
-        const created_by = document.getElementById('progBy').value.trim();
 
         if (!centerId || !program_name) {
           err.textContent = 'Center and program name are required.';
@@ -104,7 +101,7 @@
         }
 
         try {
-          await addProgram({ center_id: centerId, program_name, program_code, status, description, created_by });
+          await addProgram({ center_id: centerId, program_name, program_code, status });
           // reset + close
           form.reset();
           document.getElementById('progStatus').value = 'Active';
