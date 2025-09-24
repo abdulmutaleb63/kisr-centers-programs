@@ -1,4 +1,4 @@
-// js/center.js — no auth + hero cover via CSS classes + abbreviation UI (no desc/created_by)
+// js/center.js — no auth + hero cover via CSS classes + inline blue copy buttons (no desc/created_by)
 
 /** Map a center code to the CSS class we’ll add (must match your CSS & DB) */
 function heroClassFor(code) {
@@ -65,7 +65,7 @@ async function renderCenter(centerId) {
     return;
   }
 
-  // Render program cards (shows abbreviation + copy buttons, no desc/created_by)
+  // Render program cards (buttons inline & blue)
   progs.forEach((p) => {
     const col = document.createElement("div");
     col.className = "col-12 col-md-6 col-lg-4";
@@ -82,26 +82,26 @@ async function renderCenter(centerId) {
       <div class="card h-100">
         <div class="card-body d-flex flex-column">
           <div class="d-flex justify-content-between align-items-start gap-2">
-            <h5 class="card-title mb-0">${escapeHtml(name)}</h5>
+            <h5 class="card-title mb-0 d-flex align-items-center gap-2 flex-wrap">
+              ${escapeHtml(name)}
+              <button class="btn btn-sm btn-primary copy-btn"
+                      data-text="${nameAttr}"
+                      title="Copy program name">Copy name</button>
+            </h5>
             <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'} badge-status">
               ${escapeHtml(p.status || '')}
             </span>
           </div>
 
           ${code ? `
-            <div class="program-meta">
+            <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
               <span class="badge text-bg-light">${escapeHtml(code)}</span>
-              <button class="btn btn-sm btn-outline-secondary copy-btn"
+              <button class="btn btn-sm btn-primary copy-btn"
                       data-text="${codeAttr}"
                       title="Copy abbreviation">Copy code</button>
             </div>` : ''}
 
-          <div class="program-footer">
-            <button class="btn btn-sm btn-outline-secondary copy-btn"
-                    data-text="${nameAttr}"
-                    title="Copy program name">Copy name</button>
-            <small class="text-muted">${dateStr}</small>
-          </div>
+          <div class="mt-auto text-muted small text-end">${dateStr}</div>
         </div>
       </div>
     `;
@@ -164,4 +164,3 @@ window.addEventListener("pageshow", () => {
     }
   }).catch(()=>{});
 });
-
