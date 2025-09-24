@@ -1,4 +1,5 @@
 // js/db.js  — simplified (no auth), wired to your Supabase
+// Adds program_code (abbreviation) support
 
 // === Supabase client (your project) ===
 const SUPABASE_URL = "https://abvbsvidylgeavqevuaq.supabase.co";
@@ -28,9 +29,9 @@ function onAuthChange(cb) {
 }
 
 // -----------------------------
-// Data access (matches the new schema)
+// Data access (matches schema)
 // centers(id, code, name)
-// programs(id, center_id, program_name, status, description, created_by, created_at)
+// programs(id, center_id, program_name, program_code, status, description, created_by, created_at)
 // -----------------------------
 
 // READ: centers list
@@ -44,11 +45,11 @@ async function getCenters() {
   return data || [];
 }
 
-// READ: programs for a center
+// READ: programs for a center (includes program_code)
 async function getPrograms(centerId) {
   const { data, error } = await supa
     .from("programs")
-    .select("id, center_id, program_name, status, description, created_by, created_at")
+    .select("id, center_id, program_name, program_code, status, description, created_by, created_at")
     .eq("center_id", centerId)
     .order("created_at", { ascending: false });
 
@@ -56,25 +57,39 @@ async function getPrograms(centerId) {
   return data || [];
 }
 
+// helper: normalize program_code (trim + collapse spaces -> no spaces; upper-case)
+function normalizeCode(code) {
+  if (!code) return null;
+  const cleaned = String(code).trim().replace(/\s+/g, "");
+  return cleaned ? cleaned.toUpperCase() : null;
+}
+
 // WRITE: add a program (anonymous insert allowed by RLS)
-async function addProgram({ center_id, program_name, status = "Active", description = "", created_by = "" }) {
+async function addProgram({ center_id, program_name, program_code = "", status = "Active", description = "", created_by = "" }) {
   if (!center_id || !program_name?.trim()) {
     throw new Error("center_id and program_name are required.");
   }
 
-  const payload = { center_id, program_name: program_name.trim(), status, description, created_by };
+  const payload = {
+    center_id,
+    program_name: program_name.trim(),
+    program_code: normalizeCode(program_code), // NEW: abbreviation
+    status,
+    description,
+    created_by
+  };
 
-  const { error, data } = await supa
+  const { data, error } = await supa
     .from("programs")
     .insert(payload)
     .select()
     .single();
 
   if (error) {
-    // Unique-constraint friendly message (for uq_program_unique)
     const msg = (error.message || "").toLowerCase();
-    if (msg.includes("uq_program_unique") || msg.includes("unique")) {
-      throw new Error("This program already exists for this center.");
+    // handle duplicate code per center (unique index) or other unique constraints
+    if (msg.includes("uq_program_code_per_center") || msg.includes("uq_program_code") || msg.includes("unique")) {
+      throw new Error("This program (name or abbreviation) already exists for this center.");
     }
     throw error;
   }
