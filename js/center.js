@@ -1,6 +1,6 @@
-// js/center.js — simplified to new schema (no auth) + hero cover image via CSS classes
+// js/center.js — no auth + hero cover via CSS classes + abbreviation UI
 
-/** Map a center code to the CSS class we’ll add */
+/** Map a center code to the CSS class we’ll add (must match centers.code in DB) */
 function heroClassFor(code) {
   const allowed = ['EBRC','ELSRC','WRC','PRC','TED','QHSWED','SSDD'];
   return allowed.includes(code) ? `hero-${code}` : 'hero-ENG';
@@ -65,25 +65,45 @@ async function renderCenter(centerId) {
     return;
   }
 
-  // Render program cards
+  // Render program cards (now shows abbreviation + copy buttons)
   progs.forEach((p) => {
     const col = document.createElement("div");
     col.className = "col-12 col-md-6 col-lg-4";
 
     const name = p.program_name || "";
     const nameAttr = name.replace(/"/g, "&quot;"); // for data-text
-    const descHtml = p.description ? `<p class="mt-2 mb-3 text-muted small">${escapeHtml(p.description)}</p>` : "";
+
+    const code = p.program_code || "";
+    const codeAttr = code.replace(/"/g, "&quot;");
+
+    const descHtml = p.description
+      ? `<p class="mt-2 mb-3 text-muted small">${escapeHtml(p.description)}</p>`
+      : "";
 
     col.innerHTML = `
       <div class="card h-100 shadow-sm">
         <div class="card-body d-flex flex-column">
           <div class="d-flex justify-content-between align-items-start gap-2">
             <h5 class="card-title mb-0">${escapeHtml(name)}</h5>
-            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'}">${escapeHtml(p.status || '')}</span>
+            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'}">
+              ${escapeHtml(p.status || '')}
+            </span>
           </div>
+
+          ${code ? `
+          <div class="mt-1 d-flex align-items-center gap-2">
+            <span class="badge text-bg-light">${escapeHtml(code)}</span>
+            <button class="btn btn-sm btn-outline-secondary copy-btn"
+                    data-text="${codeAttr}"
+                    title="Copy abbreviation">Copy code</button>
+          </div>` : ''}
+
           ${descHtml}
+
           <div class="mt-auto d-flex justify-content-between align-items-center">
-            <button class="btn btn-sm btn-outline-secondary copy-btn" data-text="${nameAttr}" title="Copy program name">Copy</button>
+            <button class="btn btn-sm btn-outline-secondary copy-btn"
+                    data-text="${nameAttr}"
+                    title="Copy program name">Copy name</button>
             <small class="text-muted">
               ${(p.created_by ? `${escapeHtml(p.created_by)} · ` : "")}${new Date(p.created_at).toLocaleDateString()}
             </small>
@@ -116,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Clipboard handler for "Copy" buttons
+// Clipboard handler for "Copy" buttons (works for both code + name)
 document.addEventListener("click", async (e) => {
   const btn = e.target.closest(".copy-btn");
   if (!btn) return;
