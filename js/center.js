@@ -1,4 +1,4 @@
-// js/center.js — no auth + hero cover via CSS classes + abbreviation UI (polished)
+// js/center.js — no auth + hero cover via CSS classes + abbreviation UI (no desc/created_by)
 
 /** Map a center code to the CSS class we’ll add (must match your CSS & DB) */
 function heroClassFor(code) {
@@ -65,7 +65,7 @@ async function renderCenter(centerId) {
     return;
   }
 
-  // Render program cards (shows abbreviation + copy buttons, uses .program-meta/footer)
+  // Render program cards (shows abbreviation + copy buttons, no desc/created_by)
   progs.forEach((p) => {
     const col = document.createElement("div");
     col.className = "col-12 col-md-6 col-lg-4";
@@ -76,9 +76,7 @@ async function renderCenter(centerId) {
     const code = p.program_code || "";
     const codeAttr = code.replace(/"/g, "&quot;");
 
-    const descHtml = p.description
-      ? `<p class="mt-2 mb-3 text-muted small">${escapeHtml(p.description)}</p>`
-      : "";
+    const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString() : "";
 
     col.innerHTML = `
       <div class="card h-100">
@@ -98,15 +96,11 @@ async function renderCenter(centerId) {
                       title="Copy abbreviation">Copy code</button>
             </div>` : ''}
 
-          ${descHtml}
-
           <div class="program-footer">
             <button class="btn btn-sm btn-outline-secondary copy-btn"
                     data-text="${nameAttr}"
                     title="Copy program name">Copy name</button>
-            <small class="text-muted">
-              ${(p.created_by ? `${escapeHtml(p.created_by)} · ` : "")}${new Date(p.created_at).toLocaleDateString()}
-            </small>
+            <small class="text-muted">${dateStr}</small>
           </div>
         </div>
       </div>
