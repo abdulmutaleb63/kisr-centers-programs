@@ -148,3 +148,10 @@ footer { margin-top: auto; }
 /* RTL tweaks */
 [dir="rtl"] .center-header{ flex-direction:row-reverse; }
 [dir="rtl"] .center-title{ text-align:right; }
+
+#centerSubtitle .copy-btn {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  line-height: 1.2;
+}
+
