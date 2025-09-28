@@ -46,7 +46,14 @@ async function renderCenter(centerId) {
 
   // Titles
   document.getElementById("centerTitle").textContent = center.name;
-  document.getElementById("centerSubtitle").textContent = `Code: ${center.code || "-"}`;
+  const subEl = document.getElementById("centerSubtitle");
+subEl.innerHTML = `
+  Code: <span class="fw-bold">${escapeHtml(center.code || "-")}</span>
+  <button class="btn btn-sm btn-outline-primary copy-btn"
+          data-text="${escapeHtml(center.code || "")}"
+          title="Copy center code">📋</button>
+`;
+
 
   // Expose center_id to Add Program wrapper (used by center.html inline script)
   const addWrap = document.getElementById("addProgramWrap");
