@@ -123,7 +123,7 @@ footer { margin-top: auto; }
 }
 .center-hero .container{
   position:relative; z-index:2; color:#fff;
-}
+} 
 
 /* Map center code -> hero background (paths are relative to css/style.css) */
 .center-hero.hero-EBRC   { background-image:url('../img/energy.jpg'); }
