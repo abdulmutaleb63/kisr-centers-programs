@@ -155,18 +155,25 @@ footer { margin-top: auto; }
   line-height: 1.2;
 }
 
-.center-hero a.back-link {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  text-decoration: none;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+/* Back link style in the hero */
+.center-hero .back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  font-weight:600;
+  color:#fff;                 /* full white */
+  background:rgba(0,0,0,.45); /* dark chip behind text */
+  border-radius:8px;
+  text-decoration:none;
+  text-shadow:0 1px 2px rgba(0,0,0,.4);
+  transition:background .2s ease, transform .1s ease;
+}
+.center-hero .back-link:hover{
+  background:rgba(0,0,0,.65);
+  transform:translateY(-1px);
 }
 
-.center-hero a.back-link:hover {
-  text-decoration: underline;
-  color: #f8f9fa;
-}
 
 
 
