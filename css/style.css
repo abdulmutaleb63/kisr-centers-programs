@@ -156,20 +156,17 @@ footer { margin-top: auto; }
 }
 
 .center-hero a.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   color: #fff;
-  background: rgba(0,0,0,0.4); /* subtle dark background */
-  border-radius: 6px;
   text-decoration: none;
-  transition: background .2s ease;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
 }
 
 .center-hero a.back-link:hover {
-  background: rgba(0,0,0,0.6);
-  color: #fff;
+  text-decoration: underline;
+  color: #f8f9fa;
 }
+
+
 
