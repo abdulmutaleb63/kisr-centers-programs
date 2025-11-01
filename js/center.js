@@ -48,7 +48,7 @@ async function renderCenter(centerId) {
 const titleEl = document.getElementById("centerTitle");
 titleEl.innerHTML = `
   ${escapeHtml(center.name)}
-  <button class="btn btn-sm btn-outline-primary copy-btn ms-2"
+  <button class="copy-icon-btn copy-btn ms-2"
           data-text="${escapeHtml(center.name || "")}"
           title="Copy center name">📋</button>
 `;
@@ -56,7 +56,7 @@ titleEl.innerHTML = `
 const subEl = document.getElementById("centerSubtitle");
 subEl.innerHTML = `
   Code: <span class="fw-bold">${escapeHtml(center.code || "-")}</span>
-  <button class="btn btn-sm btn-outline-primary copy-btn ms-2"
+  <button class="copy-icon-btn copy-btn ms-2"
           data-text="${escapeHtml(center.code || "")}"
           title="Copy center code">📋</button>
 `;
