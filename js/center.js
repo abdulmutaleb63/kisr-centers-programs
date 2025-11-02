@@ -103,9 +103,6 @@ subEl.innerHTML = `
                       data-text="${nameAttr}"
                       title="Copy program name">Copy name</button>
             </h5>
-            <span class="badge ${p.status === 'Active' ? 'bg-success' : 'bg-secondary'} badge-status">
-              ${escapeHtml(p.status || '')}
-            </span>
           </div>
 
           ${code ? `
