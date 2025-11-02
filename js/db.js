@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Create client (no auth persistence needed now)
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// -----------------------------
+// ----------------------------
 // Auth stubs (kept to avoid breakage if referenced elsewhere)
 // -----------------------------
 async function signIn(_email, _password) {
