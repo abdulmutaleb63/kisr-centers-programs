@@ -1,5 +1,5 @@
 // js/db.js  — simplified (no auth), wired to your Supabase
-// Schema now: programs(id, center_id, program_name, program_code, status, created_at)
+// Schema now: programs(id, center_id, program_name, program_code, created_at)
 
 // === Supabase client (your project) ===
 const SUPABASE_URL = "https://abvbsvidylgeavqevuaq.supabase.co";
@@ -31,7 +31,7 @@ function onAuthChange(cb) {
 // -----------------------------
 // Data access (matches schema)
 // centers(id, code, name)
-// programs(id, center_id, program_name, program_code, status, created_at)
+// programs(id, center_id, program_name, program_code, created_at)
 // -----------------------------
 
 // READ: centers list
@@ -45,11 +45,10 @@ async function getCenters() {
   return data || [];
 }
 
-// READ: programs for a center (includes program_code; no desc/created_by)
 async function getPrograms(centerId) {
   const { data, error } = await supa
     .from("programs")
-    .select("id, center_id, program_name, program_code, status, created_at")
+    .select("id, center_id, program_name, program_code, created_at")
     .eq("center_id", centerId)
     .order("created_at", { ascending: false });
 
@@ -65,7 +64,7 @@ function normalizeCode(code) {
 }
 
 // WRITE: add a program (no description/created_by)
-async function addProgram({ center_id, program_name, program_code = "", status = "Active" }) {
+async function addProgram({ center_id, program_name, program_code = "" }) {
   if (!center_id || !program_name?.trim()) {
     throw new Error("center_id and program_name are required.");
   }
@@ -73,8 +72,7 @@ async function addProgram({ center_id, program_name, program_code = "", status =
   const payload = {
     center_id,
     program_name: program_name.trim(),
-    program_code: normalizeCode(program_code),
-    status
+    program_code: normalizeCode(program_code)
   };
 
   const { data, error } = await supa
@@ -83,13 +81,7 @@ async function addProgram({ center_id, program_name, program_code = "", status =
     .select()
     .single();
 
-  if (error) {
-    const msg = (error.message || "").toLowerCase();
-    if(msg.includes("uq_program_code_per_center") || msg.includes("uq_program_code") || msg.includes("unique")){
-      throw new Error("This program (name or code) already exists for this center.");
-    }
-    throw error;
-  }
+  if (error) throw error;
   return data;
 }
 
