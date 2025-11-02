@@ -81,44 +81,49 @@ subEl.innerHTML = `
   }
 
   // Render program cards (buttons inline & blue)
-  progs.forEach((p) => {
-    const col = document.createElement("div");
-    col.className = "col-12 col-md-6 col-lg-4";
 
-    const name = p.program_name || "";
-    const nameAttr = name.replace(/"/g, "&quot;"); // for data-text
+// Render program cards (aligned & tidy)
+// Render program cards (aligned vertically)
+progs.forEach((p) => {
+  const col = document.createElement("div");
+  col.className = "col-12 col-md-6 col-lg-4";
 
-    const code = p.program_code || "";
-    const codeAttr = code.replace(/"/g, "&quot;");
+  const name = p.program_name || "";
+  const nameAttr = name.replace(/"/g, "&quot;");
 
-    const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString() : "";
+  const code = p.program_code || "";
+  const codeAttr = code.replace(/"/g, "&quot;");
 
-    col.innerHTML = `
-      <div class="card h-100">
-        <div class="card-body d-flex flex-column">
-          <div class="d-flex justify-content-between align-items-start gap-2">
-            <h5 class="card-title mb-0 d-flex align-items-center gap-2 flex-wrap">
-              ${escapeHtml(name)}
-              <button class="btn btn-sm btn-primary copy-btn"
-                      data-text="${nameAttr}"
-                      title="Copy program name">Copy name</button>
-            </h5>
-          </div>
+  const dateStr = p.created_at ? new Date(p.created_at).toLocaleDateString() : "";
 
-          ${code ? `
-            <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
-              <span class="badge text-bg-light">${escapeHtml(code)}</span>
-              <button class="btn btn-sm btn-primary copy-btn"
-                      data-text="${codeAttr}"
-                      title="Copy abbreviation">Copy code</button>
-            </div>` : ''}
+  col.innerHTML = `
+    <div class="card h-100">
+      <div class="card-body">
 
-          <div class="mt-auto text-muted small text-end">${dateStr}</div>
-        </div>
+        <!-- Program name -->
+        <h5 class="card-title mb-1">${escapeHtml(name)}</h5>
+        <button class="btn btn-sm btn-primary copy-btn mb-2"
+          data-text="${nameAttr}">
+          Copy name
+        </button>
+
+        <!-- Program code (if exists) -->
+        ${code ? `
+          <div class="mb-1 fw-semibold">${escapeHtml(code)}</div>
+          <button class="btn btn-sm btn-primary copy-btn mb-2"
+            data-text="${codeAttr}">
+            Copy code
+          </button>
+        ` : ""}
+
+        <!-- Date -->
+        <div class="mt-auto text-muted small text-end">${dateStr}</div>
+
       </div>
-    `;
-    grid.appendChild(col);
-  });
+    </div>
+  `;
+  grid.appendChild(col);
+});
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
