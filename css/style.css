@@ -41,6 +41,12 @@ footer { margin-top: auto; }
   display: flex;               /* make rows stack cleanly */
   flex-direction: column;
   gap: 8px;                    /* uniform vertical rhythm */
+  text-align:left;
+}
+
+.card .fw-semibold {
+  font-size: .9rem;
+  opacity: .8;
 }
 
 /* Program card internals */
@@ -192,3 +198,90 @@ footer { margin-top: auto; }
 }
 
 
+/* --- Program Card Layout Fix --- */
+
+/* Make every program card same height */
+#programGrid .card {
+  height: 100%;
+  display: flex;
+}
+#programGrid .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+/* Title row tidy */
+#programGrid .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+/* Copy buttons row (first row under title) */
+.program-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Abbreviation row (second row) */
+.program-code-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Keep code badge compact */
+.program-code-row .badge {
+  padding: 5px 8px;
+  font-size: 0.8rem;
+}
+
+/* Date always at the bottom right */
+.program-date {
+  margin-top: auto;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Slight tighter copy btn style (still nice) */
+#programGrid .copy-btn {
+  min-width: 90px;
+  height: 30px;
+  font-size: 0.75rem;
+}
+
+/* Glassy copy buttons inside cards */
+.card .copy-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(0,0,0,0.15);
+  backdrop-filter: blur(6px);
+  color: #0d6efd; /* subtle blue text */
+  font-weight: 500;
+  transition: all .2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+/* Hover effect = glassy blue */
+.card .copy-btn:hover {
+  background: rgba(13,110,253,0.20); /* translucent blue */
+  border-color: rgba(13,110,253,0.45);
+  color: #0a58ca;
+  transform: translateY(-1px);
+}
+
+/* When clicked/copied (✓ Copied) */
+.card .copy-btn:disabled {
+  background: rgba(13,110,253,0.3);
+  color: white !important;
+  border-color: rgba(13,110,253,0.6);
+}
