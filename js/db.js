@@ -87,7 +87,7 @@ async function addProgram({ center_id, program_name, program_code = "", status =
     throw error;
   }
   return data;
-
+}
 
 // Small utility if you need HTML escaping in other files
 function escapeHtml(s) {
