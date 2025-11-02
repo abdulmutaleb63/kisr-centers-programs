@@ -84,15 +84,10 @@ async function addProgram({ center_id, program_name, program_code = "", status =
     .single();
 
   if (error) {
-    const msg = (error.message || "").toLowerCase();
-    // handle duplicate code per center (unique index) or other unique constraints
-    if (msg.includes("uq_program_code_per_center") || msg.includes("uq_program_code") || msg.includes("unique")) {
-      throw new Error("This program (name or abbreviation) already exists for this center.");
-    }
     throw error;
   }
   return data;
-}
+
 
 // Small utility if you need HTML escaping in other files
 function escapeHtml(s) {
