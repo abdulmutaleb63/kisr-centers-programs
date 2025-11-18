@@ -21,7 +21,11 @@ function renderTiles(centers) {
   const tiles = document.getElementById('tiles');
   tiles.innerHTML = '';
 
-  centers
+  // 🔥 ADD: hide these centers
+  const hiddenCodes = ["SSDD", "QHSWED"];
+  const visibleCenters = centers.filter(c => !hiddenCodes.includes(c.code));
+
+  visibleCenters
     .slice()
     .sort((a,b) => String(a.name||'').localeCompare(String(b.name||'')))
     .forEach(c => {
